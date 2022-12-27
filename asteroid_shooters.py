@@ -73,6 +73,25 @@ class Meteor(pygame.sprite.Sprite):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (round(self.pos.x),round(self.pos.y))
 
+# score class
+
+class Score:
+    def __init__(self):
+        self.font = pygame.font.Font('/Users/griggs/Desktop/Dev/Games/AsteroidShooters/graphics/subatomic.ttf', 50)
+
+    def display(self):
+        # create text
+        score_text = f'Score: {pygame.time.get_ticks() // 1000}'
+        # create rect
+        text_surf = self.font.render(score_text, True, (255,255,255))
+        text_rect = text_surf.get_rect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - 80))
+        display_surface.blit(text_surf, text_rect)
+        pygame.draw.rect(
+            display_surface, (255, 255, 255), 
+            text_rect.inflate(30,30),
+            width = 8,
+            border_radius = 5)
+
 # basic setup
 pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280,720
@@ -94,6 +113,10 @@ ship = Ship(spaceship_group)
 # timer
 meteor_timer = pygame.event.custom_type()
 pygame.time.set_timer(meteor_timer,400)
+
+# score
+score = Score()
+
 # game loop:
 while True:
 
@@ -105,13 +128,16 @@ while True:
         if event.type == meteor_timer:
             meteor_y_pos = randint(-150, -50)
             meteor_x_pos = randint(-100, WINDOW_WIDTH + 100)
-            Meteor((meteor_x_pos, meteor_y_pos), group = meteor_group)
+            Meteor((meteor_x_pos, meteor_y_pos), groups = meteor_group)
 
     # delta time
     dt = clock.tick() / 1000
 
     # background
     display_surface.blit(background_surface,(0,0))
+
+    # score
+    score.display()
 
     # update
     spaceship_group.update()
