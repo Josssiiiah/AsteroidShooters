@@ -1,4 +1,7 @@
 import pygame, sys
+from random import randint, uniform
+
+# sprite classes
 
 class Ship(pygame.sprite.Sprite):
     def __init__(self,groups): 
@@ -38,7 +41,6 @@ class Ship(pygame.sprite.Sprite):
         self.shoot()
         self.input_position()
         
-
 class Laser(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
         super().__init__(groups)
@@ -56,11 +58,20 @@ class Laser(pygame.sprite.Sprite):
         
 class Meteor(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
+
+        # basic setup 
         super().__init__(groups)
         self.image = pygame.image.load('/Users/griggs/Desktop/Dev/Games/AsteroidShooters/graphics/meteor.png')
-
+        self.rect = self.image.get_rect(center = pos) 
+        
         # random float-based position 
-        self.pos = pygame.math.Vector2([math.rand,])
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.direction = pygame.math.Vector2(uniform(-0.5,0.5),1) # (x, y)
+        self.speed = randint(400,600)
+
+    def update(self):
+        self.pos += self.direction * self.speed * dt
+        self.rect.topleft = (round(self.pos.x),round(self.pos.y))
 
 # basic setup
 pygame.init()
@@ -91,8 +102,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == meteor_timer
-            Meteor(pos, group)
+        if event.type == meteor_timer:
+            meteor_y_pos = randint(-150, -50)
+            meteor_x_pos = randint(-100, WINDOW_WIDTH + 100)
+            Meteor((meteor_x_pos, meteor_y_pos), group = meteor_group)
 
     # delta time
     dt = clock.tick() / 1000
@@ -103,10 +116,13 @@ while True:
     # update
     spaceship_group.update()
     laser_group.update()
+    meteor_group.update()
 
     # graphics
     spaceship_group.draw(display_surface)
     laser_group.draw(display_surface)
+    meteor_group.draw(display_surface)
+
 
     # draw the frame
     pygame.display.update()
