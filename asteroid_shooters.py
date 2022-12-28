@@ -80,7 +80,7 @@ class Meteor(pygame.sprite.Sprite):
     
     def rotate(self):
         self.rotation += self.rotation_speed * dt
-        rotated_surf = pygame.transform.rotozoom(self.scaled_surf, self.rotation, 1)
+        rotated_surf = pygame.transform.rotozoom(self.scaled_surf, self.rotation, 1                                              )
         self.image = rotated_surf
         self.rect = self.image.get_rect(center = self.rect.center) # create new rect at the same position
 
