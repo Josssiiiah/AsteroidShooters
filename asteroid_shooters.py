@@ -13,8 +13,7 @@ def getAbsolutePath(relativePath: str) -> str:
     return absolutePath
 
 
-# The sprite classes
-
+# sprite classes
 
 class Ship(pygame.sprite.Sprite):
     def __init__(self, groups):
@@ -51,11 +50,16 @@ class Ship(pygame.sprite.Sprite):
             # create new laser object in specified location
             Laser(self.rect.midtop, laser_group)
 
+    def meteor_collision(self):
+        if pygame.sprite.spritecollide(self, meteor_group, False): # sprite, group, dokill
+            pygame.quit()
+            sys.exit()
+
     def update(self):
         self.laser_timer()
         self.shoot()
         self.input_position()
-
+        self.meteor_collision()
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, pos, groups):
@@ -70,10 +74,16 @@ class Laser(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, -1)
         self.speed = 600
 
+    def meteor_collission(self):
+        if pygame.sprite.spritecollide(self, meteor_group, True):
+            self.kill()
+
     def update(self):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
-
+        if self.rect.bottom < 0:
+            self.kill()
+        self.meteor_collission()
 
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, pos, groups):
@@ -95,7 +105,7 @@ class Meteor(pygame.sprite.Sprite):
         # random float-based position
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2(uniform(-0.5, 0.5), 1)  # (x, y)
-        self.speed = randint(400, 600)
+        self.speed = randint(200, 400)
 
         # rotation logic
         self.rotation = 0
@@ -113,9 +123,8 @@ class Meteor(pygame.sprite.Sprite):
         self.rotate()
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
-
-# score class
-
+        if self.rect.top > WINDOW_HEIGHT:
+            self.kill()
 
 class Score:
     def __init__(self):
@@ -164,6 +173,7 @@ pygame.time.set_timer(meteor_timer, 400)
 
 # score
 score = Score()
+
 
 # game loop:
 while True:
